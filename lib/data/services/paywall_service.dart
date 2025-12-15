@@ -4,9 +4,8 @@ class PaywallService {
   static const String _entitledKey = 'premium_entitled_v1';
   static const String _inviteCodeKey = 'premium_invite_code_v1';
 
-  // Compile-time bypass (--dart-define=BYPASS_PAYWALL=true)
-  static const bool bypassPaywall =
-      bool.fromEnvironment('BYPASS_PAYWALL', defaultValue: false);
+  // Paywall bypass - set to true for free access, false to enforce paywall
+  static const bool bypassPaywall = true;
 
   // Optional comma-separated invite codes (--dart-define=INVITE_CODES=CODE1,CODE2)
   static const String inviteCodesEnv =
