@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/mentor_models.dart';
 import '../../../core/theme/theme.dart';
 import 'mentor_detail_page.dart'; // Import existing providers
+import '../../widgets/usage_limit_gate.dart';
 
 /// Third screen - individual mentor chat
 class MentorChatScreen extends ConsumerStatefulWidget {
@@ -56,8 +57,11 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
+    // Check daily usage limit before proceeding
+    if (!await checkUsageLimit(context)) return;
+
     _messageController.clear();
-    
+
     final streaming = ref.read(streamingEnabledProvider);
     final preset = ref.read(selectedPresetProvider);
 
@@ -68,6 +72,9 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
           safeMode: false,
           ref: ref,
         );
+
+    // Record successful usage
+    await recordUsage();
 
     _scrollToBottom();
   }

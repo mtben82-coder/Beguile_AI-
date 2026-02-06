@@ -13,6 +13,7 @@ import '../../../services/beguile_api.dart';
 import '../../../widgets/tab_header.dart';
 import '../../../widgets/state_widgets.dart';
 import '../../atoms/glass_card.dart';
+import '../../widgets/usage_limit_gate.dart';
 
 // BEGUILE AI — COUNCIL ARENA
 // Matches the exact React prototype functionality and styling
@@ -73,6 +74,9 @@ class _CouncilPageState extends ConsumerState<CouncilPage>
 
   Future<void> _summonCouncil() async {
     if (_inputController.text.trim().isEmpty || isPlaying) return;
+
+    // Check daily usage limit before proceeding
+    if (!await checkUsageLimit(context)) return;
 
     print("🔥 Calling Council endpoint...");
     
@@ -183,6 +187,9 @@ class _CouncilPageState extends ConsumerState<CouncilPage>
           isPlaying = false;
         });
       }
+
+      // Record successful usage
+      await recordUsage();
 
       if (transcript.isEmpty) {
         print("⚠️ No council replies returned");

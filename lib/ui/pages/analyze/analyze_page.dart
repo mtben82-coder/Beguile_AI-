@@ -11,6 +11,7 @@ import '../../molecules/molecules.dart';
 import 'scan_output_card.dart';
 import 'pattern_output_card.dart';
 import '../../../widgets/tab_header.dart';
+import '../../widgets/usage_limit_gate.dart';
 
 // ===== PROVIDERS =====
 final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
@@ -321,6 +322,9 @@ class _AnalyzePageState extends ConsumerState<AnalyzePage> {
   }
 
   Future<void> _analyze(WidgetRef ref) async {
+    // Check daily usage limit before proceeding
+    if (!await checkUsageLimit(context)) return;
+
     final selectedTone = ref.read(analyzeToneProvider);
     final selectedMode = ref.read(analyzeModeProvider);
 
@@ -368,6 +372,9 @@ class _AnalyzePageState extends ConsumerState<AnalyzePage> {
 
       final guardedResponse = WhisperfireServices.enforceClientGuards(response);
       ref.read(analyzeResultProvider.notifier).state = guardedResponse;
+
+      // Record successful usage
+      await recordUsage();
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollController.animateTo(
