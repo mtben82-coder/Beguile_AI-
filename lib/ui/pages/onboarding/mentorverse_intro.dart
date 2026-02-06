@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/services/constants.dart';
 import '../../../data/models/mentor_models.dart';
-import '../../../widgets/app_header.dart';
 
 /// Epic Mentorverse introduction - shows all 79 mentors in cinematic sequence
 class MentorverseIntro extends StatefulWidget {
@@ -129,62 +128,53 @@ class _MentorverseIntroState extends State<MentorverseIntro>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // ── Purple header with logo ──
-        const AppHeader(),
-        // ── Existing cinematic content (expanded to fill remaining space) ──
-        Expanded(
-          child: Container(
-            color: Colors.black,
-            child: Stack(
-              children: [
-                // PHASE 1: Rapid mentor flash
-                if (_phase == 0 && _currentMentorIndex < _representatives.length)
-                  _buildMentorFlash(_representatives[_currentMentorIndex]),
+    return Container(
+      color: Colors.black,
+      child: Stack(
+        children: [
+          // PHASE 1: Rapid mentor flash
+          if (_phase == 0 && _currentMentorIndex < _representatives.length)
+            _buildMentorFlash(_representatives[_currentMentorIndex]),
 
-                // PHASE 2: Realm reveals
-                if (_phase == 1 && _currentRealmIndex < RealmConstants.realms.length)
-                  _buildRealmReveal(
-                    RealmConstants.realms[_currentRealmIndex],
-                    _currentRealmIndex,
-                  ),
+          // PHASE 2: Realm reveals
+          if (_phase == 1 && _currentRealmIndex < RealmConstants.realms.length)
+            _buildRealmReveal(
+              RealmConstants.realms[_currentRealmIndex],
+              _currentRealmIndex,
+            ),
 
-                // PHASE 3: Final message
-                if (_phase == 2) _buildFinalMessage(),
+          // PHASE 3: Final message
+          if (_phase == 2) _buildFinalMessage(),
 
-                // Skip button (top right, always visible)
-                Positioned(
-                  top: 40,
-                  right: 20,
-                  child: GestureDetector(
-                    onTap: widget.onComplete,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        'SKIP',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+          // Skip button (top right, always visible)
+          Positioned(
+            top: 40,
+            right: 20,
+            child: GestureDetector(
+              onTap: widget.onComplete,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 1,
                   ),
                 ),
-              ],
+                child: Text(
+                  'SKIP',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

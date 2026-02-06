@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../core/theme/theme.dart';
 
 class TabHeader extends StatelessWidget {
@@ -19,21 +20,21 @@ class TabHeader extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color(0xFF9333EA).withOpacity(0.15), // purple-600 at 15%
-            Color(0xFF7C3AED).withOpacity(0.10), // purple-700 at 10%
+            Color(0xFF9333EA).withOpacity(0.15),
+            Color(0xFF7C3AED).withOpacity(0.10),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         border: Border(
           bottom: BorderSide(
-            color: Color(0xFF8B5CF6), // purple-500 neon accent
+            color: Color(0xFF8B5CF6),
             width: 2,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Color(0xFF8B5CF6).withOpacity(0.3), // Neon purple glow
+            color: Color(0xFF8B5CF6).withOpacity(0.3),
             blurRadius: 20,
             offset: Offset(0, 4),
           ),
@@ -41,7 +42,7 @@ class TabHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Crystal ball emoji logo (bigger)
+          // Crystal ball emoji logo
           Container(
             width: 60,
             height: 60,
@@ -63,7 +64,7 @@ class TabHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 20),
-          // "Beguile AI" text (way bigger)
+          // "Beguile AI" text
           Expanded(
             child: Text(
               'BEGUILE AI',
@@ -79,6 +80,37 @@ class TabHeader extends StatelessWidget {
                     offset: Offset(0, 2),
                   ),
                 ],
+              ),
+            ),
+          ),
+          // ── SUBSCRIBE CROWN ICON ──
+          GestureDetector(
+            onTap: () {
+              context.push('/paywall');
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFFFFD700).withOpacity(0.4),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Text(
+                  '👑',
+                  style: TextStyle(fontSize: 22),
+                ),
               ),
             ),
           ),

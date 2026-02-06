@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../data/services/constants.dart';
 import '../../../data/models/mentor_models.dart';
 import '../../../core/theme/theme.dart';
+import '../../../widgets/tab_header.dart';
 import 'mentor_list_screen.dart';
 
 /// First screen of Mentors tab - shows 12 stunning realm category cards
@@ -15,32 +16,13 @@ class RealmListScreen extends StatelessWidget {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // App bar with title
-          SliverAppBar(
-            backgroundColor: WFColors.base,
-            expandedHeight: 120,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'Mentorverse',
-                style: TextStyle(
-                  color: WFColors.textPrimary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              titlePadding: const EdgeInsets.only(left: 24, bottom: 16),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      WFColors.base,
-                      WFColors.base.withOpacity(0.8),
-                    ],
-                  ),
-                ),
+          // Purple header matching all other tabs
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: const TabHeader(
+                title: 'Beguile AI',
+                subtitle: 'MENTORS',
               ),
             ),
           ),
