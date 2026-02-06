@@ -10,16 +10,16 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (OnboardingService.isCompleted) {
-      // If onboarding already completed, skip to paywall
+      // If onboarding already completed, skip to login (NOT paywall)
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) context.go('/paywall');
+        if (context.mounted) context.go('/login');
       });
     }
     return BeguileOnboarding(
       onFinish: () async {
         await OnboardingService.complete();
-        // After onboarding, go to paywall
-        context.go('/paywall');
+        // After onboarding, go to login (NOT paywall)
+        if (context.mounted) context.go('/login');
       },
     );
   }

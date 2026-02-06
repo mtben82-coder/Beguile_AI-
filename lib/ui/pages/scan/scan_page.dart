@@ -13,6 +13,7 @@ import '../../../services/beguile_api.dart';
 import '../../../widgets/tab_header.dart';
 import '../../../widgets/state_widgets.dart';
 import '../../atoms/glass_card.dart';
+import '../../widgets/usage_limit_gate.dart';
 
 // BEGUILE AI — SCAN TAB
 // Matches the exact React prototype functionality and styling
@@ -136,6 +137,9 @@ class _ScanPageState extends ConsumerState<ScanPage> {
   Future<void> _runScan() async {
     if (_inputController.text.trim().isEmpty || isScanning) return;
 
+    // Check daily usage limit before proceeding
+    if (!await checkUsageLimit(context)) return;
+
     print("🔥 Calling Scan endpoint...");
     
     if (mounted) {
@@ -210,6 +214,9 @@ class _ScanPageState extends ConsumerState<ScanPage> {
           );
         });
       }
+
+      // Record successful usage
+      await recordUsage();
 
       if (verdictsData.isEmpty) {
         print("⚠️ No results returned");

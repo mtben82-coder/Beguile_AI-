@@ -206,6 +206,35 @@ class _BeguileOnboardingState extends ConsumerState<BeguileOnboarding>
             if (_showCouncilReveal) _CouncilRevealSequence(
               onComplete: widget.onFinish,
             ),
+            // ── SKIP BUTTON (visible during cinematic phases) ──
+            if (_showMentorverseIntro || _showCouncilReveal)
+              Positioned(
+                top: 16,
+                right: 16,
+                child: GestureDetector(
+                  onTap: () {
+                    // Skip straight to finish (which now goes to login, not paywall)
+                    widget.onFinish();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    child: const Text(
+                      'Skip',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
