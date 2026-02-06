@@ -1,0 +1,95 @@
+name: Build AAB (fallback)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+          channel: stable
+
+      - name: Write local.properties
+        run: |
+          mkdir -p android
+          FLUTTER_SDK=$(dirname "$(dirname "$(which flutter)")")
+          echo "flutter.sdk=$FLUTTER_SDK" > android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: Prepare keystore (use secrets if present, otherwise generate)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_ALIAS:               ${{ secrets.KEY_ALIAS }}
+          STORE_PASSWORD:          ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD:            ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -e
+          mkdir -p android/app
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ] && [ -n "$KEY_ALIAS" ] && [ -n "$STORE_PASSWORD" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo "Using provided GitHub secrets for signing"
+            # Try robust base64 decode (strip whitespace, ignore garbage)
+            if echo "$ANDROID_KEYSTORE_BASE64" | tr -d '\r\n ' | base64 -d -i > android/app/upload-keystore.jks 2>/dev/null; then
+              echo "Decoded keystore from ANDROID_KEYSTORE_BASE64"
+              echo "ANDROID_KEYSTORE_PATH=$GITHUB_WORKSPACE/android/app/upload-keystore.jks" >> $GITHUB_ENV
+              echo "KEY_ALIAS=$KEY_ALIAS"       >> $GITHUB_ENV
+              echo "STORE_PASSWORD=$STORE_PASSWORD" >> $GITHUB_ENV
+              echo "KEY_PASSWORD=$KEY_PASSWORD" >> $GITHUB_ENV
+              echo "SECRETS_MODE=1" >> $GITHUB_ENV
+            else
+              echo "WARN: base64 decode failed. Falling back to generating a fresh keystore." >&2
+              keytool -genkeypair -v -storetype JKS \
+                -keystore android/app/upload-keystore.jks \
+                -alias upload -keyalg RSA -keysize 2048 -validity 10000 \
+                -storepass pass123 -keypass pass123 \
+                -dname "CN=Upload, OU=CI, O=App, L=, S=, C=US"
+              echo "ANDROID_KEYSTORE_PATH=$GITHUB_WORKSPACE/android/app/upload-keystore.jks" >> $GITHUB_ENV
+              echo "KEY_ALIAS=upload"  >> $GITHUB_ENV
+              echo "STORE_PASSWORD=pass123" >> $GITHUB_ENV
+              echo "KEY_PASSWORD=pass123"   >> $GITHUB_ENV
+              echo "SECRETS_MODE=0" >> $GITHUB_ENV
+            fi
+          else
+            echo "Secrets missing — generating fresh upload key (alias=upload)"
+            keytool -genkeypair -v -storetype JKS \
+              -keystore android/app/upload-keystore.jks \
+              -alias upload -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass pass123 -keypass pass123 \
+              -dname "CN=Upload, OU=CI, O=App, L=, S=, C=US"
+            echo "ANDROID_KEYSTORE_PATH=$GITHUB_WORKSPACE/android/app/upload-keystore.jks" >> $GITHUB_ENV
+            echo "KEY_ALIAS=upload"  >> $GITHUB_ENV
+            echo "STORE_PASSWORD=pass123" >> $GITHUB_ENV
+            echo "KEY_PASSWORD=pass123"   >> $GITHUB_ENV
+            echo "SECRETS_MODE=0" >> $GITHUB_ENV
+          fi
+
+      - name: Build signed AAB (unique versionCode)
+        run: flutter build appbundle --release --build-number $GITHUB_RUN_NUMBER
+
+      - name: Upload artifact (AAB)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload generated keystore (only if created)
+        if: env.SECRETS_MODE == '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-upload-keystore
+          path: android/app/upload-keystore.jks 

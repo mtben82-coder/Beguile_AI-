@@ -1,0 +1,85 @@
+name: Build Flutter AAB
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: stable
+
+      - name: Write local.properties
+        run: |
+          mkdir -p android
+          FLUTTER_SDK=$(dirname "$(dirname "$(which flutter)")")
+          echo "flutter.sdk=$FLUTTER_SDK" > android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> android/local.properties
+
+      - name: Precache Flutter engine
+        run: flutter precache --android --force
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: Generate fresh keystore
+        run: |
+          set -e
+          mkdir -p android/app
+          echo "Generating fresh keystore for signing"
+          keytool -genkeypair -v -storetype JKS \
+            -keystore android/app/upload-keystore.jks \
+            -alias upload -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass pass123 -keypass pass123 \
+            -dname "CN=Upload, OU=CI, O=App, L=, S=, C=US"
+          echo "KEY_ALIAS=upload" >> $GITHUB_ENV
+          echo "STORE_PASSWORD=pass123" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=pass123" >> $GITHUB_ENV
+          echo "ANDROID_KEYSTORE_PATH=$GITHUB_WORKSPACE/android/app/upload-keystore.jks" >> $GITHUB_ENV
+          ls -l android/app/upload-keystore.jks
+          echo "Keystore generated successfully"
+
+      - name: Keystore sanity check
+        run: |
+          set -e
+          echo "Keystore path: $ANDROID_KEYSTORE_PATH"
+          if [ ! -s "$ANDROID_KEYSTORE_PATH" ]; then echo "ERROR: Keystore missing at $ANDROID_KEYSTORE_PATH"; exit 1; fi
+          if [ -z "$STORE_PASSWORD" ]; then echo "ERROR: STORE_PASSWORD is empty"; exit 1; fi
+          if [ -z "$KEY_ALIAS" ]; then echo "ERROR: KEY_ALIAS is empty"; exit 1; fi
+          if [ -z "$KEY_PASSWORD" ]; then echo "ERROR: KEY_PASSWORD is empty"; exit 1; fi
+          keytool -list -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$STORE_PASSWORD" | head -n 5
+          keytool -list -alias "$KEY_ALIAS" -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$STORE_PASSWORD" -v | sed -n '1,8p' || { echo "ERROR: Invalid STORE_PASSWORD or KEY_ALIAS"; exit 1; }
+          keytool -exportcert -alias "$KEY_ALIAS" -keystore "$ANDROID_KEYSTORE_PATH" -storepass "$STORE_PASSWORD" -keypass "$KEY_PASSWORD" -rfc | head -n 5 >/dev/null || { echo "ERROR: Invalid KEY_PASSWORD (or alias mismatch)"; exit 1; }
+
+      - name: Build signed AAB
+        run: |
+          flutter build appbundle --release --build-number $GITHUB_RUN_NUMBER
+
+      - name: Upload artifact (primary path)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: warn
+
+      - name: Upload artifact (fallback path)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab-fallback
+          path: build/app/outputs/bundle/*/app-*.aab
+          if-no-files-found: ignore
