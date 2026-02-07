@@ -14,8 +14,8 @@ android {
         applicationId "com.beguileai.app"  // MUST match Play package exactly
         minSdk 24                          // Required by Play Billing v6+
         targetSdk 36
-        versionCode 24                   // 🔼 Bumped for 16KB page size fix
-        versionName "2.0.4"                // 🔼 Visible app version
+        versionCode 26                   // 🔼 Bumped to fix media permission policy issue
+        versionName "2.0.5"                // 🔼 Visible app version
         // Required for Play Billing Library v6+
         resValue "string", "play_billing_provider_authority", "com.android.vending"
     }
