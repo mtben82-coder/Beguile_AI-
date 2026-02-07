@@ -54,7 +54,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       // Authenticated: send to mentors from login/onboarding/paywall
-      if (authState == AuthState.authenticated && (isOnLogin || isOnSignup || isOnOnboarding || isOnPaywall)) {
+      if (authState == AuthState.authenticated && (isOnLogin || isOnSignup || isOnOnboarding)) {
 return '/mentors';
       }
       return null;

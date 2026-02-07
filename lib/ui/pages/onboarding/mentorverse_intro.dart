@@ -145,34 +145,6 @@ class _MentorverseIntroState extends State<MentorverseIntro>
 
           // PHASE 3: Final message
           if (_phase == 2) _buildFinalMessage(),
-
-          // Skip button (top right, always visible)
-          Positioned(
-            top: 40,
-            right: 20,
-            child: GestureDetector(
-              onTap: widget.onComplete,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  'SKIP',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
