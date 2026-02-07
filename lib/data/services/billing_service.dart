@@ -103,45 +103,20 @@ class BillingService {
     _pendingPurchaseCompleter = Completer<bool>();
 
     if (Platform.isAndroid && product is GooglePlayProductDetails) {
-      print('🔍 Processing Android purchase for: $plan');
+      print('🔍 Processing Android purchase for: $plan (${product.id})');
       final offers = product.productDetails.subscriptionOfferDetails;
-      dynamic selectedOffer;
+
+      // Simple: just use the first available offer for this product.
+      // The product ID already determines monthly vs yearly.
+      String? offerToken;
       if (offers != null && offers.isNotEmpty) {
-        print('🔍 Searching offers for plan: $plan');
-        print('📊 Available offers: ${offers.length}');
-        
-        for (final o in offers) {
-          final base = (o.basePlanId ?? '').toLowerCase();
-          final tags =
-              (o.offerTags ?? []).map((t) => t.toLowerCase()).toList();
-          
-          print('  Offer: basePlanId=$base, tags=$tags');
-          
-          if (plan == 'monthly' &&
-              (base.contains('month') ||
-                  tags.any((t) => t.contains('month')))) {
-            selectedOffer = o;
-            print('✅ Selected monthly offer: $base');
-            break;
-          }
-          if ((plan == 'yearly' || plan == 'annual') &&
-              (base.contains('year') ||
-                  base.contains('annual') ||
-                  tags.any((t) => t.contains('year') || t.contains('annual')))) {
-            selectedOffer = o;
-            print('✅ Selected yearly offer: $base');
-            break;
-          }
-        }
-        
-        // Fallback: Use first offer if no match found
-        if (selectedOffer == null) {
-          selectedOffer = offers.first;
-          print('⚠️ No matching offer found for $plan, using first offer: ${offers.first.basePlanId}');
-        }
+        offerToken = offers.first.offerIdToken;
+        print('✅ Using offer for $plan: basePlanId=${offers.first.basePlanId}');
       }
 
-      final offerToken = selectedOffer?.offerIdToken ?? product.offerToken;
+      // Fallback to product-level token
+      offerToken ??= product.offerToken;
+
       if (offerToken == null || offerToken.isEmpty) {
         print('❌ No valid offer token for $plan');
         _pendingPurchaseCompleter = null;
@@ -160,6 +135,7 @@ class BillingService {
         return false;
       }
     } else {
+      // iOS or other platforms
       final purchaseParam = PurchaseParam(productDetails: product);
       final submitted =
           await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
