@@ -83,33 +83,39 @@ class TabHeader extends StatelessWidget {
               ),
             ),
           ),
-          // ── SUBSCRIBE CROWN ICON ──
+          // ── PRO SUBSCRIBE BUTTON ──
           GestureDetector(
             onTap: () {
               context.push('/paywall');
             },
             child: Container(
-              width: 44,
-              height: 44,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                  colors: [Color(0xFFFFD700), Color(0xFFFF8C00)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1.5,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0xFFFFD700).withOpacity(0.4),
-                    blurRadius: 10,
-                    spreadRadius: 1,
+                    color: Color(0xFFFFD700).withOpacity(0.5),
+                    blurRadius: 12,
+                    spreadRadius: 2,
                   ),
                 ],
               ),
-              child: const Center(
-                child: Text(
-                  '👑',
-                  style: TextStyle(fontSize: 22),
+              child: const Text(
+                'PRO',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
                 ),
               ),
             ),
