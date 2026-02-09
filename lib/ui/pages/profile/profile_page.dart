@@ -7,6 +7,7 @@ import '../../../widgets/tab_header.dart';
 import '../../atoms/glass_card.dart';
 import '../../../data/models/vault_models.dart';
 import '../../../data/services/vault_service.dart';
+import '../../../data/services/analytics_service.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -19,6 +20,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String selectedFilter = 'all'; // 'all', 'scan', 'council'
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    AnalyticsService.logScreenView('vault_page');
+  }
 
   @override
   void dispose() {
@@ -196,11 +203,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   void _shareEntry(VaultEntry entry) {
     final text = '${entry.title}\n\n${entry.content}\n\n— Beguile AI ${entry.type.toUpperCase()}';
+    AnalyticsService.logVaultEntryShared(entry.type);
     Share.share(text);
   }
 
   void _copyEntry(VaultEntry entry) {
     final text = '${entry.title}\n\n${entry.content}';
+    AnalyticsService.logVaultEntryCopied(entry.type);
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

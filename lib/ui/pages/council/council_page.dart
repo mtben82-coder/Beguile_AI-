@@ -14,6 +14,7 @@ import '../../../widgets/tab_header.dart';
 import '../../../widgets/state_widgets.dart';
 import '../../atoms/glass_card.dart';
 import '../../widgets/usage_limit_gate.dart';
+import '../../../data/services/analytics_service.dart';
 
 // BEGUILE AI — COUNCIL ARENA
 // Matches the exact React prototype functionality and styling
@@ -51,6 +52,7 @@ class _CouncilPageState extends ConsumerState<CouncilPage>
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('council_page');
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 6000),
       vsync: this,

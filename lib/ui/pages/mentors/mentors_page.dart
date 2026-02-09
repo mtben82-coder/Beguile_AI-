@@ -8,12 +8,14 @@ import '../../atoms/glass_card.dart';
 import 'mentor_detail_page.dart';
 import 'realm_list_screen.dart'; // NEW: Import realm list screen
 import '../../../widgets/tab_header.dart';
+import '../../../data/services/analytics_service.dart';
 
 class MentorsPage extends ConsumerWidget {
   const MentorsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    AnalyticsService.logScreenView('mentors_page');
     // Simply show the RealmListScreen as the mentors tab entry point
     return const RealmListScreen();
   }

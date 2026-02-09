@@ -3,6 +3,7 @@ import '../../../data/services/constants.dart';
 import '../../../data/models/mentor_models.dart';
 import '../../../core/theme/theme.dart';
 import '../../../widgets/tab_header.dart';
+import '../../../data/services/analytics_service.dart';
 import 'mentor_list_screen.dart';
 
 /// First screen of Mentors tab - shows 12 stunning realm category cards
@@ -11,6 +12,7 @@ class RealmListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AnalyticsService.logScreenView('realm_list');
     return Scaffold(
       backgroundColor: WFColors.base,
       body: CustomScrollView(

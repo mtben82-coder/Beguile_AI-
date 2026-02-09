@@ -12,6 +12,8 @@ import 'app.dart';
 import 'data/services/onboarding_service.dart';
 import 'data/services/billing_service.dart';
 import 'data/services/vault_service.dart';
+import 'data/services/analytics_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +53,17 @@ Future<void> main() async {
     await BillingService.init();
   } catch (e) {
     print('Billing service init failed (likely web): $e');
+  }
+
+  // Set analytics user ID when auth state changes
+  if (!defaultTargetPlatform.toString().contains('linux')) {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        AnalyticsService.setUserId(user.uid);
+      } else {
+        AnalyticsService.setUserId(null);
+      }
+    });
   }
 
   runApp(

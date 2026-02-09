@@ -2,7 +2,7 @@ plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
     id "dev.flutter.flutter-gradle-plugin"
-    // id "com.google.gms.google-services" // only if you use Firebase
+    id "com.google.gms.google-services"
 }
 
 android {
@@ -14,8 +14,8 @@ android {
         applicationId "com.beguileai.app"  // MUST match Play package exactly
         minSdk 24                          // Required by Play Billing v6+
         targetSdk 36
-        versionCode 28                   // 🔼 Bumped to fix media permission policy issue
-        versionName "2.0.8"                // 🔼 Visible app version
+        versionCode 29                   // 🔼 Bumped for nuclear permission fix + analytics
+        versionName "2.0.9"                // 🔼 Visible app version
         // Required for Play Billing Library v6+
         resValue "string", "play_billing_provider_authority", "com.android.vending"
     }
