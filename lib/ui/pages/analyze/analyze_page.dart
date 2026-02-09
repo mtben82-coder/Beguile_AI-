@@ -12,6 +12,7 @@ import 'scan_output_card.dart';
 import 'pattern_output_card.dart';
 import '../../../widgets/tab_header.dart';
 import '../../widgets/usage_limit_gate.dart';
+import '../../../data/services/analytics_service.dart';
 
 // ===== PROVIDERS =====
 final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
@@ -54,6 +55,7 @@ class _AnalyzePageState extends ConsumerState<AnalyzePage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('analyze_page');
 
     // Load settings immediately to ensure providers are initialized
     _loadSettings();
@@ -327,6 +329,7 @@ class _AnalyzePageState extends ConsumerState<AnalyzePage> {
 
     final selectedTone = ref.read(analyzeToneProvider);
     final selectedMode = ref.read(analyzeModeProvider);
+    AnalyticsService.logAnalysisStarted(selectedMode, selectedTone);
 
     ref.read(isAnalyzingProvider.notifier).state = true;
     ref.read(analyzeResultProvider.notifier).state = null;

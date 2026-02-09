@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/services/paywall_service.dart';
 import '../../../data/services/billing_service.dart';
+import '../../../data/services/analytics_service.dart';
 
 final entitlementProvider = FutureProvider<bool>((ref) async {
   return PaywallService.isEntitled();
@@ -36,6 +37,8 @@ class _PaywallPageState extends ConsumerState<PaywallPage>
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('paywall_page');
+    AnalyticsService.logPaywallViewed();
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),

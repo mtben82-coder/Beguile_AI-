@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/theme.dart';
 import 'core/routing/app_router.dart';
+import 'data/services/analytics_service.dart';
 
 class BeguileApp extends ConsumerWidget {
   const BeguileApp({super.key});

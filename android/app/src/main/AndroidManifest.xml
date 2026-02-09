@@ -5,19 +5,29 @@
     <!-- Core app permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Remove media permissions injected by transitive plugin dependencies.
-         This app only uses text-based analysis and does not access device photos/videos. -->
+    <!-- ══════════════════════════════════════════════════════════════════
+         NUCLEAR REMOVAL of ALL media/camera/storage permissions.
+         These are injected by transitive Flutter plugin dependencies
+         (cached_network_image, share_plus, flutter_tts, etc.).
+         This app is TEXT-ONLY — no photos, videos, camera, or storage needed.
+         ══════════════════════════════════════════════════════════════════ -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" tools:node="remove" />
     <uses-permission android:name="android.permission.CAMERA" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
 
     <application
         android:name="${applicationName}"
         android:label="Beguile AI"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        tools:replace="android:label">
 
         <activity
             android:name=".MainActivity"
@@ -28,7 +38,6 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
-            <!-- Theme while Flutter initializes -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
@@ -39,13 +48,11 @@
             </intent-filter>
         </activity>
 
-        <!-- Flutter-generated plugin registration -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
 
-    <!-- Query intent for text processing -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />

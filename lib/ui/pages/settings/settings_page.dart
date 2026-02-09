@@ -11,12 +11,14 @@ import 'sub_pages/account_management_page.dart';
 import 'sub_pages/privacy_policy_page.dart';
 import 'sub_pages/terms_of_service_page.dart';
 import 'sub_pages/app_info_page.dart';
+import '../../../data/services/analytics_service.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    AnalyticsService.logScreenView('settings_page');
     final profileAsync = ref.watch(userProfileProvider);
 
     return Scaffold(

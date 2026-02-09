@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/mentor_models.dart';
 import '../../../core/theme/theme.dart';
+import '../../../data/services/analytics_service.dart';
 import 'mentor_detail_page.dart'; // Import existing providers
 import '../../widgets/usage_limit_gate.dart';
 
@@ -23,6 +24,8 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('mentor_chat');
+    AnalyticsService.logChatOpened(widget.mentor.id);
     // Load mentor and show greeting
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(selectedMentorProvider.notifier).state = widget.mentor;
@@ -64,6 +67,7 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
 
     final streaming = ref.read(streamingEnabledProvider);
     final preset = ref.read(selectedPresetProvider);
+    AnalyticsService.logMentorMessageSent(widget.mentor.id, preset);
 
     await ref.read(mentorMessagesProvider(widget.mentor.id).notifier).sendMessage(
           userText: text,
@@ -254,6 +258,7 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                     onLongPress: () {
                       // Copy message on long press
                       Clipboard.setData(ClipboardData(text: message.text));
+                      AnalyticsService.logChatMessageCopied(widget.mentor.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: const Text('Message copied to clipboard'),
@@ -295,6 +300,7 @@ class _MentorChatScreenState extends ConsumerState<MentorChatScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     Clipboard.setData(ClipboardData(text: message.text));
+                                    AnalyticsService.logChatMessageCopied(widget.mentor.id);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: const Text('Message copied to clipboard'),

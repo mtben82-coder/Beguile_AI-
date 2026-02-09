@@ -15,10 +15,12 @@ import '../../ui/pages/auth/login_page.dart';
 import '../../ui/pages/paywall/paywall_page.dart';
 import '../../data/services/paywall_service.dart';
 import '../../data/services/onboarding_service.dart';
+import '../../data/services/analytics_service.dart';
 import '../../ui/shared/loading_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    observers: [AnalyticsService.observer],
     initialLocation: '/onboarding', // New users start at onboarding
     redirect: (context, state) {
       final container = ProviderScope.containerOf(context);

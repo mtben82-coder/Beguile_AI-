@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/providers/auth_providers.dart';
 import '../../../data/services/auth_service.dart';
+import '../../../data/services/analytics_service.dart';
 import '../../../widgets/app_header.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -32,6 +33,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('login_page');
     _isSignUp = widget.initialSignUp;
   }
 
@@ -60,6 +62,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final authService = ref.read(authServiceProvider);
       await authService.signInWithGoogle();
       if (mounted) {
+        AnalyticsService.logLogin('google');
         context.go('/mentors');
       }
     } catch (e) {
@@ -82,6 +85,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final authService = ref.read(authServiceProvider);
       await authService.signInWithApple();
       if (mounted) {
+        AnalyticsService.logLogin('apple');
         context.go('/mentors');
       }
     } catch (e) {
@@ -109,11 +113,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           _emailController.text.trim(),
           _passwordController.text,
         );
+        if (mounted) {
+          AnalyticsService.logSignUp('email');
+        }
       } else {
         await authService.signInWithEmailAndPassword(
           _emailController.text.trim(),
           _passwordController.text,
         );
+        if (mounted) {
+          AnalyticsService.logLogin('email');
+        }
       }
       if (mounted) {
         context.go('/mentors');

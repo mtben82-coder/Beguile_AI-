@@ -8,6 +8,7 @@ import '../../../data/models/mentor_models.dart';
 import '../../../data/services/api_service.dart';
 import '../../../data/services/cache_service.dart';
 import '../../../data/services/constants.dart';
+import '../../../data/services/analytics_service.dart';
 import '../../atoms/atoms.dart';
 
 // ===== PROVIDERS =====
@@ -203,6 +204,8 @@ class _MentorDetailPageState extends ConsumerState<MentorDetailPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('mentor_detail');
+    AnalyticsService.logMentorSelected(widget.mentor.id, widget.mentor.name);
 
     // FIXED: Properly initialize preset provider to ensure generate button works immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {

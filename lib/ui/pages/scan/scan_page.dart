@@ -14,6 +14,7 @@ import '../../../widgets/tab_header.dart';
 import '../../../widgets/state_widgets.dart';
 import '../../atoms/glass_card.dart';
 import '../../widgets/usage_limit_gate.dart';
+import '../../../data/services/analytics_service.dart';
 
 // BEGUILE AI — SCAN TAB
 // Matches the exact React prototype functionality and styling
@@ -88,6 +89,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('scan_page');
     // Initialize selected mentor
     selectedMentor = _scanMentors.isNotEmpty ? _scanMentors[0] : MentorConstants.mentors[0];
     

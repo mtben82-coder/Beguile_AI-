@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/theme.dart';
 import '../../../data/services/constants.dart';
+import '../../../data/services/analytics_service.dart';
 import 'mentorverse_intro.dart';
 
 /* ─────────────────────── SLIDE DATA ─────────────────────── */
@@ -143,6 +144,7 @@ class _BeguileOnboardingState extends ConsumerState<BeguileOnboarding>
   @override
   void initState() {
     super.initState();
+    AnalyticsService.logScreenView('onboarding');
   }
 
   @override
@@ -248,7 +250,10 @@ class _BeguileOnboardingState extends ConsumerState<BeguileOnboarding>
             PageView.builder(
               controller: _controller,
           itemCount: _slides.length,
-              onPageChanged: (i) => setState(() => _page = i),
+              onPageChanged: (i) {
+                setState(() => _page = i);
+                AnalyticsService.logOnboardingStep(i);
+              },
           itemBuilder: (context, index) {
             final slide = _slides[index];
             final isLastSlide = index == _slides.length - 1;

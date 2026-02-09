@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../data/providers.dart';
 import '../../data/providers/auth_providers.dart';
 import '../../core/theme/theme.dart';
+import '../../data/services/analytics_service.dart';
 import '../shared/loading_shell.dart';
 import 'onboarding/onboarding_page.dart';
 
@@ -124,6 +125,8 @@ class _MainShellContent extends StatelessWidget {
   }
 
   void _onItemTapped(BuildContext context, int index) {
+    const tabNames = ['mentors', 'scan', 'council', 'analyze', 'vault', 'settings'];
+    AnalyticsService.logTabSelected(tabNames[index]);
     switch (index) {
       case 0:
         context.goNamed('mentors');
