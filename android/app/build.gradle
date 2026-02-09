@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.0"
     // Google Play Billing dependency is pulled transitively by Flutter plugin,
     // but keep explicit to lock major version compatibility if needed.
     implementation 'com.android.billingclient:billing-ktx:6.2.1'
