@@ -17,6 +17,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: 'gradle'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -47,6 +48,15 @@ jobs:
           echo "KEY_ALIAS=upload" >> $GITHUB_ENV
           echo "STORE_PASSWORD=pass123" >> $GITHUB_ENV
           echo "KEY_PASSWORD=pass123" >> $GITHUB_ENV
+
+      - name: Pre-download Gradle distribution
+        working-directory: android
+        run: |
+          for i in 1 2 3 4; do
+            ./gradlew --version && break
+            echo "Gradle download attempt $i failed, retrying in $((i * 15))s..."
+            sleep $((i * 15))
+          done
 
       - name: Build signed AAB
         run: |
