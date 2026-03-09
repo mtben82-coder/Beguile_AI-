@@ -49,15 +49,6 @@
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
 
-    <key>NSCameraUsageDescription</key>
-    <string>This app uses the camera to scan and analyze messages.</string>
-
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app may access photos for analysis or sharing features.</string>
-
-    <key>NSMicrophoneUsageDescription</key>
-    <string>This app uses the microphone for AI voice interactions.</string>
-    
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>
