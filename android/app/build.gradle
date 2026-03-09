@@ -45,6 +45,47 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    // ── NUCLEAR permission removal ──────────────────────────────────
+    // tools:node="remove" in the manifest doesn't always work because
+    // some library AARs re-inject permissions after the merge step.
+    // This hooks into the build AFTER manifest merging and physically
+    // strips the unwanted <uses-permission> lines from the final XML.
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def processManifest = output.processManifestProvider.get()
+            processManifest.doLast {
+                def manifestDir = processManifest.multiApkManifestOutputDirectory.get().asFile
+                fileTree(manifestDir).matching { include "**/AndroidManifest.xml" }.each { File manifestFile ->
+                    def text = manifestFile.text
+                    def original = text
+                    // Kill every permission Google Play has flagged
+                    [
+                        'android.permission.READ_MEDIA_IMAGES',
+                        'android.permission.READ_MEDIA_VIDEO',
+                        'android.permission.READ_MEDIA_AUDIO',
+                        'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
+                        'android.permission.READ_EXTERNAL_STORAGE',
+                        'android.permission.WRITE_EXTERNAL_STORAGE',
+                        'android.permission.ACCESS_MEDIA_LOCATION',
+                        'android.permission.MANAGE_EXTERNAL_STORAGE',
+                        'android.permission.CAMERA',
+                        'android.permission.RECORD_AUDIO',
+                        'android.permission.FOREGROUND_SERVICE',
+                        'com.google.android.gms.permission.AD_ID',
+                    ].each { perm ->
+                        text = text.replaceAll(
+                            /(?m)^\s*<uses-permission[^>]*android:name\s*=\s*"${java.util.regex.Pattern.quote(perm)}"[^>]*\/>\s*\n?/, ''
+                        )
+                    }
+                    if (text != original) {
+                        manifestFile.text = text
+                        println "🔥 Stripped unwanted permissions from ${manifestFile}"
+                    }
+                }
+            }
+        }
+    }
 }
 
 dependencies {
